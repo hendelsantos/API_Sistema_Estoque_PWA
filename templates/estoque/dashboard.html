@@ -16,81 +16,34 @@
 {% endblock %}
 
 {% block content %}
+{% block content %}
 <!-- Estatísticas principais -->
 <div class="row mb-4">
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-primary shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total de Produtos
-                        </div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_produtos }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="bi bi-box fs-2 text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card">
+            <h3>{{ total_produtos }}</h3>
+            <p><i class="bi bi-box"></i> Total de Produtos</p>
         </div>
     </div>
-
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Estoque Baixo
-                        </div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ produtos_baixo_estoque }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="bi bi-exclamation-triangle fs-2 text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, var(--danger-color), #c71e1e);">
+            <h3>{{ produtos_baixo_estoque }}</h3>
+            <p><i class="bi bi-exclamation-triangle"></i> Estoque Baixo</p>
         </div>
     </div>
-
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-success shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                            Valor Total do Estoque
-                        </div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">R$ {{ valor_total_estoque|floatformat:2 }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="bi bi-currency-dollar fs-2 text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, var(--success-color), #157347);">
+            <h3>R$ {{ valor_total_estoque|floatformat:2 }}</h3>
+            <p><i class="bi bi-cash-stack"></i> Valor Total</p>
         </div>
     </div>
-
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                            Scanner QR
-                        </div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            <a href="{% url 'estoque:buscar_qr' %}" class="btn btn-info btn-sm">
-                                <i class="bi bi-qr-code-scan"></i> Abrir
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="bi bi-qr-code fs-2 text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, var(--warning-color), #b6860e);">
+            <h3>{{ total_movimentacoes }}</h3>
+            <p><i class="bi bi-arrow-left-right"></i> Movimentações</p>
         </div>
     </div>
 </div>

@@ -43,46 +43,39 @@
     <div class="card-body">
         {% if page_obj %}
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover table-mobile-stack">
                     <thead>
                         <tr>
                             <th>Data</th>
                             <th>Produto</th>
                             <th>Tipo</th>
                             <th>Quantidade</th>
-                            <th>Antes</th>
-                            <th>Depois</th>
-                            <th>Motivo</th>
-                            <th>Usuário</th>
+                            <th>Responsável</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for mov in page_obj %}
+                        {% for movimentacao in page_obj %}
                         <tr>
-                            <td>{{ mov.data_movimentacao|date:"d/m/y H:i" }}</td>
-                            <td>
-                                <a href="{% url 'estoque:produto_detail' mov.produto.pk %}">
-                                    {{ mov.produto.nome }}
-                                </a>
-                                <br><small class="text-muted">{{ mov.produto.codigo }}</small>
-                            </td>
-                            <td>
-                                <span class="badge {% if mov.tipo == 'ENTRADA' %}bg-success{% elif mov.tipo == 'SAIDA' %}bg-danger{% else %}bg-warning{% endif %}">
-                                    {{ mov.get_tipo_display }}
+                            <td data-label="Data">{{ movimentacao.data_movimentacao|date:"d/m/Y H:i" }}</td>
+                            <td data-label="Produto">{{ movimentacao.produto.nome }}</td>
+                            <td data-label="Tipo">
+                                <span class="badge {% if movimentacao.tipo == 'ENTRADA' %}bg-success{% elif movimentacao.tipo == 'SAIDA' %}bg-danger{% else %}bg-warning{% endif %}">
+                                    {{ movimentacao.get_tipo_display }}
                                 </span>
                             </td>
-                            <td>{{ mov.quantidade }} {{ mov.produto.unidade_medida }}</td>
-                            <td>{{ mov.quantidade_anterior }}</td>
-                            <td>{{ mov.quantidade_atual }}</td>
-                            <td>{{ mov.motivo }}</td>
-                            <td>{{ mov.usuario.get_full_name|default:mov.usuario.username }}</td>
+                            <td data-label="Quantidade">{{ movimentacao.quantidade }} {{ movimentacao.produto.unidade_medida }}</td>
+                            <td data-label="Responsável">{{ movimentacao.usuario.get_full_name|default:movimentacao.usuario.username }}</td>
+                            <td data-label="Ações">
+                                <a href="{% url 'estoque:produto_detail' movimentacao.produto.pk %}" class="btn btn-sm btn-outline-primary" title="Ver Produto">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-            </div>
-            
-            <!-- Paginação -->
+            </div>            <!-- Paginação -->
             {% if page_obj.has_other_pages %}
             <nav aria-label="Navegação de páginas">
                 <ul class="pagination justify-content-center">

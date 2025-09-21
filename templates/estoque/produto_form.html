@@ -4,81 +4,75 @@
 {% block title %}{{ titulo }} - Gestão de Estoque{% endblock %}
 
 {% block page_header %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">
-        <i class="bi bi-{% if produto %}pencil{% else %}plus-circle{% endif %}"></i> 
-        {{ titulo }}
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h3"><i class="bi bi-box"></i> 
+        {% if form.instance.pk %}Editar{% else %}Novo{% endif %} Produto
     </h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <a href="{% url 'estoque:produto_list' %}" class="btn btn-sm btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Voltar
+    <div class="d-flex gap-2">
+        <a href="{% url 'estoque:produto_list' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> <span class="d-none d-md-inline">Voltar</span>
         </a>
     </div>
 </div>
 {% endblock %}
+{% endblock %}
 
 {% block content %}
+{% block content %}
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-12">
         <div class="card">
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     
                     <!-- Informações Básicas -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h5 class="text-primary border-bottom pb-2">
-                                <i class="bi bi-info-circle"></i> Informações Básicas
-                            </h5>
-                        </div>
+                    <div class="mb-4">
+                        <h5 class="text-primary border-bottom pb-2 mb-3">
+                            <i class="bi bi-info-circle"></i> Informações Básicas
+                        </h5>
                         
-                        <div class="col-md-6">
-                            <div class="mb-3">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
                                 {{ form.codigo.label_tag }}
                                 {{ form.codigo|add_class:"form-control" }}
                                 {% if form.codigo.errors %}
-                                    <div class="text-danger small">{{ form.codigo.errors.0 }}</div>
+                                    <div class="text-danger">{{ form.codigo.errors }}</div>
                                 {% endif %}
                             </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="mb-3">
+                            
+                            <div class="col-md-6 mb-3">
                                 {{ form.nome.label_tag }}
                                 {{ form.nome|add_class:"form-control" }}
                                 {% if form.nome.errors %}
-                                    <div class="text-danger small">{{ form.nome.errors.0 }}</div>
+                                    <div class="text-danger">{{ form.nome.errors }}</div>
                                 {% endif %}
                             </div>
                         </div>
                         
-                        <div class="col-12">
-                            <div class="mb-3">
-                                {{ form.descricao.label_tag }}
-                                {{ form.descricao|add_class:"form-control" }}
-                                {% if form.descricao.errors %}
-                                    <div class="text-danger small">{{ form.descricao.errors.0 }}</div>
-                                {% endif %}
-                            </div>
+                        <div class="mb-3">
+                            {{ form.descricao.label_tag }}
+                            {{ form.descricao|add_class:"form-control" }}
+                            {% if form.descricao.errors %}
+                                <div class="text-danger">{{ form.descricao.errors }}</div>
+                            {% endif %}
                         </div>
                         
-                        <div class="col-md-6">
-                            <div class="mb-3">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
                                 {{ form.categoria.label_tag }}
                                 {{ form.categoria|add_class:"form-select" }}
                                 {% if form.categoria.errors %}
-                                    <div class="text-danger small">{{ form.categoria.errors.0 }}</div>
+                                    <div class="text-danger">{{ form.categoria.errors }}</div>
                                 {% endif %}
                             </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="mb-3">
+                            
+                            <div class="col-md-6 mb-3">
                                 {{ form.fornecedor.label_tag }}
                                 {{ form.fornecedor|add_class:"form-select" }}
                                 {% if form.fornecedor.errors %}
-                                    <div class="text-danger small">{{ form.fornecedor.errors.0 }}</div>
+                                    <div class="text-danger">{{ form.fornecedor.errors }}</div>
                                 {% endif %}
                             </div>
                         </div>
@@ -203,11 +197,11 @@
                     <!-- Botões -->
                     <div class="row">
                         <div class="col-12">
-                            <div class="d-flex justify-content-between">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-between">
                                 <a href="{% url 'estoque:produto_list' %}" class="btn btn-secondary">
                                     <i class="bi bi-arrow-left"></i> Cancelar
                                 </a>
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="bi bi-check-circle"></i> 
                                     {% if produto %}Atualizar{% else %}Criar{% endif %} Produto
                                 </button>
