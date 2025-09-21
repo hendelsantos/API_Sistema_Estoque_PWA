@@ -1,5 +1,4 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import Q, Sum, Count, F
@@ -9,7 +8,7 @@ from .models import Produto, Categoria, Fornecedor, MovimentacaoEstoque
 from .forms import ProdutoForm, MovimentacaoForm, CategoriaForm, FornecedorForm
 
 
-@login_required
+
 def dashboard(request):
     """Dashboard principal com estatísticas gerais"""
     
@@ -46,7 +45,7 @@ def dashboard(request):
     return render(request, 'estoque/dashboard.html', context)
 
 
-@login_required
+
 def produto_list(request):
     """Lista de produtos com busca e filtros"""
     
@@ -102,7 +101,7 @@ def produto_list(request):
     return render(request, 'estoque/produto_list.html', context)
 
 
-@login_required
+
 def produto_detail(request, pk):
     """Detalhes do produto"""
     produto = get_object_or_404(Produto, pk=pk, ativo=True)
@@ -118,7 +117,7 @@ def produto_detail(request, pk):
     return render(request, 'estoque/produto_detail.html', context)
 
 
-@login_required
+
 def produto_create(request):
     """Criar novo produto"""
     if request.method == 'POST':
@@ -134,7 +133,7 @@ def produto_create(request):
     return render(request, 'estoque/produto_form.html', context)
 
 
-@login_required
+
 def produto_update(request, pk):
     """Atualizar produto"""
     produto = get_object_or_404(Produto, pk=pk, ativo=True)
@@ -152,7 +151,7 @@ def produto_update(request, pk):
     return render(request, 'estoque/produto_form.html', context)
 
 
-@login_required
+
 def produto_delete(request, pk):
     """Desativar produto (soft delete)"""
     produto = get_object_or_404(Produto, pk=pk, ativo=True)
@@ -167,7 +166,7 @@ def produto_delete(request, pk):
     return render(request, 'estoque/produto_confirm_delete.html', context)
 
 
-@login_required
+
 def buscar_qr(request):
     """Página do scanner QR"""
     produto = None
@@ -184,7 +183,7 @@ def buscar_qr(request):
     return render(request, 'estoque/buscar_qr.html', context)
 
 
-@login_required
+
 def movimentacao_list(request):
     """Lista de movimentações"""
     movimentacoes = MovimentacaoEstoque.objects.select_related(
@@ -214,7 +213,7 @@ def movimentacao_list(request):
     return render(request, 'estoque/movimentacao_list.html', context)
 
 
-@login_required
+
 def entrada_estoque(request, produto_id):
     """Entrada de estoque"""
     produto = get_object_or_404(Produto, pk=produto_id, ativo=True)
@@ -249,7 +248,7 @@ def entrada_estoque(request, produto_id):
     return render(request, 'estoque/movimentacao_form.html', context)
 
 
-@login_required
+
 def saida_estoque(request, produto_id):
     """Saída de estoque"""
     produto = get_object_or_404(Produto, pk=produto_id, ativo=True)
@@ -292,7 +291,7 @@ def saida_estoque(request, produto_id):
     return render(request, 'estoque/movimentacao_form.html', context)
 
 
-@login_required
+
 def ajuste_estoque(request, produto_id):
     """Ajuste de estoque"""
     produto = get_object_or_404(Produto, pk=produto_id, ativo=True)
@@ -330,27 +329,27 @@ def ajuste_estoque(request, produto_id):
     return redirect('estoque:produto_detail', pk=produto.pk)
 
 
-@login_required
+
 def categoria_list(request):
     """Lista de categorias"""
     categorias = Categoria.objects.all()
     return render(request, 'estoque/categoria_list.html', {'categorias': categorias})
 
 
-@login_required
+
 def fornecedor_list(request):
     """Lista de fornecedores"""
     fornecedores = Fornecedor.objects.filter(ativo=True)
     return render(request, 'estoque/fornecedor_list.html', {'fornecedores': fornecedores})
 
 
-@login_required
+
 def relatorios(request):
     """Página de relatórios"""
     return render(request, 'estoque/relatorios.html')
 
 
-@login_required
+
 def estoque_baixo(request):
     """Produtos com estoque baixo"""
     produtos = Produto.objects.filter(
@@ -363,14 +362,14 @@ def estoque_baixo(request):
 
 
 # HTMX Views
-@login_required
+
 def produto_card_htmx(request, pk):
     """Card do produto para HTMX"""
     produto = get_object_or_404(Produto, pk=pk, ativo=True)
     return render(request, 'estoque/partials/produto_card.html', {'produto': produto})
 
 
-@login_required
+
 def buscar_produtos_htmx(request):
     """Busca de produtos via HTMX"""
     search = request.GET.get('search', '')

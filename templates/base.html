@@ -324,7 +324,6 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                {% if user.is_authenticated %}
                 <ul class="navbar-nav me-auto d-md-flex d-none">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'estoque:dashboard' %}">
@@ -344,29 +343,18 @@
                 </ul>
                 
                 <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle"></i> {{ user.get_full_name|default:user.username }}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin:index' %}">
+                            <i class="bi bi-gear"></i> Admin
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{% url 'admin:index' %}">
-                                <i class="bi bi-gear"></i> Admin
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">
-                                <i class="bi bi-box-arrow-right"></i> Sair
-                            </a></li>
-                        </ul>
                     </li>
                 </ul>
-                {% endif %}
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
     <div class="main-container">
-        {% if user.is_authenticated %}
         <!-- Sidebar for desktop -->
         <div class="row d-none d-md-flex">
             <nav class="col-md-3 col-lg-2 sidebar">
@@ -413,9 +401,6 @@
             
             <!-- Main content area -->
             <main class="col-md-9 ms-sm-auto col-lg-10">
-        {% else %}
-            <main class="col-12">
-        {% endif %}
                 <!-- Messages -->
                 {% if messages %}
                 <div class="mb-3">
@@ -433,32 +418,12 @@
                 
                 <!-- Page Content -->
                 {% block content %}
-                {% if not user.is_authenticated %}
-                <div class="container mt-5">
-                    <div class="row justify-content-center">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body text-center">
-                                    <h4>Acesso Restrito</h4>
-                                    <p>Você precisa fazer login para acessar o sistema.</p>
-                                    <a href="{% url 'login' %}" class="btn btn-primary">
-                                        <i class="bi bi-box-arrow-in-right"></i> Fazer Login
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
                 {% endblock %}
             </main>
-        {% if user.is_authenticated %}
         </div>
-        {% endif %}
     </div>
     
     <!-- Bottom Navigation for Mobile -->
-    {% if user.is_authenticated %}
     <nav class="bottom-nav">
         <div class="container-fluid">
             <div class="row text-center">
@@ -495,7 +460,6 @@
             </div>
         </div>
     </nav>
-    {% endif %}
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
