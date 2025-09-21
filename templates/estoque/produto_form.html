@@ -196,6 +196,57 @@
                         </div>
                     </div>
 
+                    <!-- Foto do Produto -->
+                    <div class="mb-4">
+                        <h5 class="text-primary border-bottom pb-2 mb-3">
+                            <i class="bi bi-camera"></i> Foto do Produto
+                        </h5>
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <!-- Área de preview da imagem -->
+                                <div id="image-preview-container" class="mb-3" {% if not form.instance.imagem %}style="display: none;"{% endif %}>
+                                    <img id="image-preview" src="{% if form.instance.imagem %}{{ form.instance.imagem.url }}{% endif %}" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
+                                    <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="clearImage()">
+                                        <i class="bi bi-trash"></i> Remover Foto
+                                    </button>
+                                </div>
+                                
+                                <!-- Botões de captura -->
+                                <div class="d-grid gap-2 d-md-flex">
+                                    <!-- Botão da câmera (mobile) -->
+                                    <button type="button" class="btn btn-outline-primary" onclick="openCamera()" id="camera-btn">
+                                        <i class="bi bi-camera-fill"></i> 
+                                        <span class="d-none d-md-inline">Tirar Foto</span>
+                                        <span class="d-md-none">Câmera</span>
+                                    </button>
+                                    
+                                    <!-- Botão de arquivo (desktop/mobile) -->
+                                    <button type="button" class="btn btn-outline-secondary" onclick="selectFile()">
+                                        <i class="bi bi-folder2-open"></i>
+                                        <span class="d-none d-md-inline">Escolher Arquivo</span>
+                                        <span class="d-md-none">Arquivo</span>
+                                    </button>
+                                </div>
+                                
+                                <!-- Input de arquivo (oculto) -->
+                                {{ form.imagem|add_class:"form-control d-none" }}
+                                
+                                <!-- Input de câmera (oculto) -->
+                                <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="handleImageSelect(this)">
+                                
+                                {% if form.imagem.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.imagem.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i> 
+                                    Use a câmera para tirar uma foto ou escolha um arquivo do dispositivo
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Informações Adicionais -->
                     <div class="mb-4">
                         <h5 class="text-primary border-bottom pb-2 mb-3">
@@ -297,6 +348,170 @@ document.addEventListener('DOMContentLoaded', function() {
     // Recalcular quando os preços mudarem
     precoCusto.addEventListener('input', calcularMargem);
     precoVenda.addEventListener('input', calcularMargem);
+});
+
+// Funções da câmera e upload de imagem
+function openCamera() {
+    console.log('Abrindo câmera...');
+    const cameraInput = document.getElementById('camera-input');
+    if (cameraInput) {
+        cameraInput.click();
+    } else {
+        console.error('Elemento camera-input não encontrado');
+    }
+}
+
+function selectFile() {
+    console.log('Selecionando arquivo...');
+    const fileInput = document.getElementById('id_imagem');
+    if (fileInput) {
+        fileInput.click();
+    } else {
+        console.error('Elemento id_imagem não encontrado');
+    }
+}
+
+function handleImageSelect(input) {
+    console.log('Manipulando seleção de imagem...');
+    const file = input.files[0];
+    if (file) {
+        console.log('Arquivo selecionado:', file.name, 'Tamanho:', file.size, 'bytes', 'Tipo:', file.type);
+        
+        // Verificar se é uma imagem válida
+        if (!file.type.startsWith('image/')) {
+            alert('Por favor, selecione apenas arquivos de imagem.');
+            input.value = '';
+            return;
+        }
+        
+        // Verificar tamanho do arquivo (máximo 5MB)
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+            alert('O arquivo é muito grande. O tamanho máximo é 5MB.');
+            input.value = '';
+            return;
+        }
+        
+        // Atualizar o input principal do formulário
+        const mainInput = document.getElementById('id_imagem');
+        if (mainInput && input.id !== 'id_imagem') {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            mainInput.files = dt.files;
+            console.log('Arquivo transferido para input principal');
+        }
+        
+        // Mostrar preview
+        showImagePreview(file);
+    } else {
+        console.log('Nenhum arquivo selecionado');
+    }
+}
+
+function showImagePreview(file) {
+    console.log('Mostrando preview da imagem...');
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById('image-preview');
+        const container = document.getElementById('image-preview-container');
+        
+        if (preview && container) {
+            preview.src = e.target.result;
+            container.style.display = 'block';
+            console.log('Preview exibido com sucesso');
+        } else {
+            console.error('Elementos de preview não encontrados');
+        }
+    };
+    reader.onerror = function(e) {
+        console.error('Erro ao ler arquivo:', e);
+        alert('Erro ao carregar a imagem. Tente novamente.');
+    };
+    reader.readAsDataURL(file);
+}
+
+function clearImage() {
+    console.log('Limpando imagem...');
+    
+    // Limpar inputs
+    const mainInput = document.getElementById('id_imagem');
+    const cameraInput = document.getElementById('camera-input');
+    
+    if (mainInput) {
+        mainInput.value = '';
+        console.log('Input principal limpo');
+    }
+    if (cameraInput) {
+        cameraInput.value = '';
+        console.log('Input da câmera limpo');
+    }
+    
+    // Esconder preview
+    const container = document.getElementById('image-preview-container');
+    const preview = document.getElementById('image-preview');
+    
+    if (container) {
+        container.style.display = 'none';
+    }
+    if (preview) {
+        preview.src = '';
+    }
+    
+    console.log('Imagem removida com sucesso');
+}
+
+// Event listener para o input principal (quando selecionado via botão de arquivo)
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Inicializando funcionalidades da câmera...');
+    
+    const mainImageInput = document.getElementById('id_imagem');
+    if (mainImageInput) {
+        mainImageInput.addEventListener('change', function() {
+            console.log('Input principal alterado');
+            if (this.files[0]) {
+                handleImageSelect(this);
+            }
+        });
+        console.log('Event listener do input principal adicionado');
+    } else {
+        console.warn('Input principal (id_imagem) não encontrado');
+    }
+    
+    // Verificar elementos necessários
+    const elements = {
+        'camera-input': document.getElementById('camera-input'),
+        'image-preview': document.getElementById('image-preview'),
+        'image-preview-container': document.getElementById('image-preview-container'),
+        'camera-btn': document.getElementById('camera-btn')
+    };
+    
+    for (const [name, element] of Object.entries(elements)) {
+        if (element) {
+            console.log(`Elemento ${name} encontrado`);
+        } else {
+            console.warn(`Elemento ${name} não encontrado`);
+        }
+    }
+    
+    // Detectar se é mobile para otimizar botões
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const cameraBtn = document.getElementById('camera-btn');
+    
+    console.log('Dispositivo móvel:', isMobile);
+    
+    if (isMobile && cameraBtn) {
+        cameraBtn.innerHTML = '<i class="bi bi-camera-fill"></i> Câmera';
+        console.log('Interface otimizada para mobile');
+    }
+    
+    // Verificar suporte a câmera
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        console.log('API de câmera suportada pelo navegador');
+    } else {
+        console.warn('API de câmera não suportada pelo navegador');
+    }
+    
+    console.log('Inicialização da câmera concluída');
 });
 </script>
 {% endblock %}
