@@ -1,11 +1,11 @@
-// Service Worker para PWA
-const CACHE_NAME = 'gestao-estoque-v1';
+// Service Worker para PWA - Versão Mobile Otimizada
+const CACHE_NAME = 'gestao-estoque-mobile-v2';
 const urlsToCache = [
   '/',
   '/static/manifest.json',
-  '/accounts/login/',
   '/produtos/',
   '/buscar-qr/',
+  '/movimentacoes/',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css',
   'https://unpkg.com/htmx.org@1.9.6/dist/htmx.min.js',
