@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Fornecedores - Gestão de Estoque{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="bi bi-truck"></i> Fornecedores</h1>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% for fornecedor in fornecedores %}
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ fornecedor.nome }}</h5>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="card-text">
+                            {% if fornecedor.cnpj %}<strong>CNPJ:</strong> {{ fornecedor.cnpj }}<br>{% endif %}
+                            {% if fornecedor.telefone %}<strong>Tel:</strong> {{ fornecedor.telefone }}<br>{% endif %}
+                            {% if fornecedor.email %}<strong>Email:</strong> {{ fornecedor.email }}{% endif %}
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        {% if fornecedor.endereco %}
+                        <p class="card-text">
+                            <strong>Endereço:</strong><br>
+                            {{ fornecedor.endereco }}
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+                <small class="text-muted">Cadastrado em {{ fornecedor.criado_em|date:"d/m/Y" }}</small>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="text-center py-5">
+            <i class="bi bi-truck fs-1 text-muted"></i>
+            <h4 class="text-muted">Nenhum fornecedor cadastrado</h4>
+            <p class="text-muted">Acesse o painel administrativo para cadastrar fornecedores.</p>
+            <a href="{% url 'admin:index' %}" class="btn btn-primary">
+                <i class="bi bi-gear"></i> Acessar Admin
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

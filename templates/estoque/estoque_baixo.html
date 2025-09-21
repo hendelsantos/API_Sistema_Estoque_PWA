@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Estoque Baixo - Gestão de Estoque{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="bi bi-exclamation-triangle text-warning"></i> Produtos com Estoque Baixo</h1>
+</div>
+{% endblock %}
+
+{% block content %}
+{% if produtos %}
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle"></i>
+        <strong>Atenção!</strong> Os produtos abaixo estão com estoque igual ou inferior ao mínimo configurado.
+    </div>
+
+    <div class="row">
+        {% for produto in produtos %}
+        <div class="col-lg-6 mb-3">
+            <div class="card border-warning">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="card-title">{{ produto.nome }}</h5>
+                            <p class="card-text">
+                                <strong>Código:</strong> {{ produto.codigo }}<br>
+                                <strong>Categoria:</strong> {{ produto.categoria.nome }}<br>
+                                <strong>Localização:</strong> {{ produto.localizacao|default:"Não definida" }}
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h3 class="text-danger">{{ produto.quantidade_atual }}</h3>
+                            <small class="text-muted">{{ produto.unidade_medida }}</small>
+                            <br>
+                            <small>Mín: {{ produto.quantidade_minima }}</small>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="btn-group w-100" role="group">
+                            <a href="{% url 'estoque:entrada_estoque' produto.pk %}" class="btn btn-success btn-sm">
+                                <i class="bi bi-plus-circle"></i> Entrada
+                            </a>
+                            <a href="{% url 'estoque:produto_detail' produto.pk %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye"></i> Detalhes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-check-circle fs-1 text-success"></i>
+        <h4 class="text-success">Parabéns!</h4>
+        <p class="text-muted">Não há produtos com estoque baixo no momento.</p>
+        <a href="{% url 'estoque:produto_list' %}" class="btn btn-primary">
+            <i class="bi bi-box"></i> Ver Todos os Produtos
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

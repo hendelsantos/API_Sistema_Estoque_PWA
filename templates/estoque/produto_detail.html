@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ produto.nome }} - Gestão de Estoque{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-box"></i> {{ produto.nome }}
+        {% if produto.estoque_baixo %}
+            <span class="badge bg-warning">Estoque Baixo</span>
+        {% endif %}
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'estoque:produto_update' produto.pk %}" class="btn btn-sm btn-warning">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-success dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="bi bi-arrow-left-right"></i> Movimentar
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'estoque:entrada_estoque' produto.pk %}">
+                        <i class="bi bi-plus-circle text-success"></i> Entrada
+                    </a></li>
+                    <li><a class="dropdown-item" href="{% url 'estoque:saida_estoque' produto.pk %}">
+                        <i class="bi bi-dash-circle text-danger"></i> Saída
+                    </a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#ajusteModal">
+                        <i class="bi bi-gear text-primary"></i> Ajuste de Estoque
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+        <a href="{% url 'estoque:produto_list' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Informações do Produto -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="row g-0">
+                {% if produto.imagem %}
+                <div class="col-md-4">
+                    <img src="{{ produto.imagem.url }}" class="img-fluid rounded-start h-100" alt="{{ produto.nome }}">
+                </div>
+                <div class="col-md-8">
+                {% else %}
+                <div class="col-12">
+                {% endif %}
+                    <div class="card-body">
+                        <h4 class="card-title">{{ produto.nome }}</h4>
+                        <p class="text-muted">Código: <strong>{{ produto.codigo }}</strong></p>
+                        
+                        {% if produto.descricao %}
+                        <p class="card-text">{{ produto.descricao }}</p>
+                        {% endif %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <strong>Categoria:</strong><br>
+                                <span class="badge bg-secondary fs-6">{{ produto.categoria.nome }}</span>
+                            </div>
+                            <div class="col-sm-6">
+                                {% if produto.fornecedor %}
+                                <strong>Fornecedor:</strong><br>
+                                {{ produto.fornecedor.nome }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <strong>Localização:</strong><br>
+                                {{ produto.localizacao|default:"Não definida" }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>QR Code:</strong><br>
+                                <code>{{ produto.qr_code }}</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Histórico de Movimentações -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Histórico de Movimentações</h5>
+            </div>
+            <div class="card-body">
+                {% if movimentacoes %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Tipo</th>
+                                    <th>Quantidade</th>
+                                    <th>Anterior</th>
+                                    <th>Atual</th>
+                                    <th>Motivo</th>
+                                    <th>Usuário</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for mov in movimentacoes %}
+                                <tr>
+                                    <td>{{ mov.data_movimentacao|date:"d/m/y H:i" }}</td>
+                                    <td>
+                                        <span class="badge {% if mov.tipo == 'ENTRADA' %}bg-success{% elif mov.tipo == 'SAIDA' %}bg-danger{% else %}bg-warning{% endif %}">
+                                            {{ mov.get_tipo_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ mov.quantidade }} {{ produto.unidade_medida }}</td>
+                                    <td>{{ mov.quantidade_anterior }}</td>
+                                    <td>{{ mov.quantidade_atual }}</td>
+                                    <td>{{ mov.motivo }}</td>
+                                    <td>{{ mov.usuario.get_full_name|default:mov.usuario.username }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{% url 'estoque:movimentacao_list' %}?produto={{ produto.id }}" class="btn btn-outline-primary">
+                            <i class="bi bi-eye"></i> Ver Todas as Movimentações
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-clock fs-1 text-muted"></i>
+                        <p class="text-muted">Nenhuma movimentação registrada ainda.</p>
+                        <a href="{% url 'estoque:entrada_estoque' produto.pk %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Primeira Movimentação
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Painel Lateral -->
+    <div class="col-lg-4">
+        <!-- Informações de Estoque -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0"><i class="bi bi-boxes"></i> Estoque Atual</h6>
+            </div>
+            <div class="card-body text-center">
+                <h2 class="{% if produto.estoque_baixo %}text-danger{% else %}text-success{% endif %}">
+                    {{ produto.quantidade_atual }} {{ produto.unidade_medida }}
+                </h2>
+                <p class="mb-1">Mínimo: {{ produto.quantidade_minima }} {{ produto.unidade_medida }}</p>
+                
+                {% if produto.estoque_baixo %}
+                    <div class="alert alert-warning mt-2">
+                        <i class="bi bi-exclamation-triangle"></i> Estoque baixo!
+                    </div>
+                {% endif %}
+                
+                <div class="progress mt-2" style="height: 8px;">
+                    {% widthratio produto.quantidade_atual produto.quantidade_minima|add:produto.quantidade_minima 100 as progress_value %}
+                    <div class="progress-bar {% if produto.estoque_baixo %}bg-danger{% else %}bg-success{% endif %}" 
+                         style="width: {% if progress_value > 100 %}100{% else %}{{ progress_value }}{% endif %}%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informações Financeiras -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="bi bi-currency-dollar"></i> Informações Financeiras</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h6>Preço de Custo</h6>
+                        <h5 class="text-primary">R$ {{ produto.preco_custo|floatformat:2 }}</h5>
+                    </div>
+                    <div class="col-6">
+                        <h6>Preço de Venda</h6>
+                        <h5 class="text-success">R$ {{ produto.preco_venda|floatformat:2 }}</h5>
+                    </div>
+                </div>
+                <hr>
+                <div class="text-center">
+                    <h6>Valor Total em Estoque</h6>
+                    <h4 class="text-info">R$ {{ produto.valor_total_estoque|floatformat:2 }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informações Adicionais -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Informações Adicionais</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Criado em:</strong><br>
+                {{ produto.criado_em|date:"d/m/Y H:i" }}</p>
+                
+                <p><strong>Última atualização:</strong><br>
+                {{ produto.atualizado_em|date:"d/m/Y H:i" }}</p>
+                
+                <p><strong>Status:</strong><br>
+                <span class="badge {% if produto.ativo %}bg-success{% else %}bg-danger{% endif %}">
+                    {% if produto.ativo %}Ativo{% else %}Inativo{% endif %}
+                </span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Ajuste de Estoque -->
+<div class="modal fade" id="ajusteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ajuste de Estoque</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'estoque:ajuste_estoque' produto.pk %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Atenção:</strong> Esta ação irá alterar diretamente a quantidade em estoque.
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="quantidade_atual_info" class="form-label">Quantidade Atual</label>
+                        <input type="text" class="form-control" id="quantidade_atual_info" 
+                               value="{{ produto.quantidade_atual }} {{ produto.unidade_medida }}" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="nova_quantidade" class="form-label">Nova Quantidade</label>
+                        <input type="number" class="form-control" name="nova_quantidade" 
+                               id="nova_quantidade" step="0.01" min="0" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="motivo" class="form-label">Motivo do Ajuste</label>
+                        <input type="text" class="form-control" name="motivo" id="motivo" 
+                               placeholder="Ex: Inventário, Correção, etc." required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Confirmar Ajuste</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

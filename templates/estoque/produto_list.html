@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+{% block title %}Produtos - Gestão de Estoque{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="bi bi-box"></i> Produtos</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'estoque:produto_create' %}" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-circle"></i> Novo Produto
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Filtros e Busca -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="search" class="form-label">Buscar</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       value="{{ search }}" placeholder="Nome, código ou QR...">
+            </div>
+            <div class="col-md-2">
+                <label for="categoria" class="form-label">Categoria</label>
+                <select class="form-select" name="categoria">
+                    <option value="">Todas</option>
+                    {% for cat in categorias %}
+                        <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == categoria_id %}selected{% endif %}>
+                            {{ cat.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="fornecedor" class="form-label">Fornecedor</label>
+                <select class="form-select" name="fornecedor">
+                    <option value="">Todos</option>
+                    {% for forn in fornecedores %}
+                        <option value="{{ forn.id }}" {% if forn.id|stringformat:"s" == fornecedor_id %}selected{% endif %}>
+                            {{ forn.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="ordem" class="form-label">Ordenar por</label>
+                <select class="form-select" name="ordem">
+                    <option value="nome" {% if ordem == 'nome' %}selected{% endif %}>Nome A-Z</option>
+                    <option value="-nome" {% if ordem == '-nome' %}selected{% endif %}>Nome Z-A</option>
+                    <option value="codigo" {% if ordem == 'codigo' %}selected{% endif %}>Código A-Z</option>
+                    <option value="quantidade_atual" {% if ordem == 'quantidade_atual' %}selected{% endif %}>Quantidade Menor</option>
+                    <option value="-quantidade_atual" {% if ordem == '-quantidade_atual' %}selected{% endif %}>Quantidade Maior</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <a href="{% url 'estoque:produto_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+        
+        <div class="mt-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="estoque_baixo" value="1" 
+                       {% if estoque_baixo == '1' %}checked{% endif %}
+                       onchange="this.form.submit()">
+                <label class="form-check-label">
+                    Apenas produtos com estoque baixo
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Produtos -->
+<div class="row" id="produtos-container">
+    {% for produto in page_obj %}
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            {% if produto.imagem %}
+                <img src="{{ produto.imagem.url }}" class="card-img-top" alt="{{ produto.nome }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="bi bi-image fs-1 text-muted"></i>
+                </div>
+            {% endif %}
+            
+            <div class="card-body">
+                <h5 class="card-title">{{ produto.nome }}</h5>
+                <p class="card-text">
+                    <small class="text-muted">{{ produto.codigo }}</small><br>
+                    <span class="badge bg-secondary">{{ produto.categoria.nome }}</span>
+                </p>
+                
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <small class="text-muted">Estoque:</small><br>
+                        <span class="{% if produto.estoque_baixo %}estoque-baixo{% else %}estoque-normal{% endif %}">
+                            {{ produto.quantidade_atual }} {{ produto.unidade_medida }}
+                        </span>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">Preço:</small><br>
+                        <strong>R$ {{ produto.preco_venda|floatformat:2 }}</strong>
+                    </div>
+                </div>
+                
+                {% if produto.estoque_baixo %}
+                    <div class="alert alert-warning py-1 px-2 mb-2">
+                        <i class="bi bi-exclamation-triangle"></i> Estoque baixo!
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="card-footer">
+                <div class="btn-group w-100" role="group">
+                    <a href="{% url 'estoque:produto_detail' produto.pk %}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-eye"></i> Ver
+                    </a>
+                    <a href="{% url 'estoque:produto_update' produto.pk %}" class="btn btn-outline-warning btn-sm">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-success btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="bi bi-arrow-left-right"></i> Movimentar
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'estoque:entrada_estoque' produto.pk %}">
+                                <i class="bi bi-plus-circle text-success"></i> Entrada
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'estoque:saida_estoque' produto.pk %}">
+                                <i class="bi bi-dash-circle text-danger"></i> Saída
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="text-center py-5">
+            <i class="bi bi-search fs-1 text-muted"></i>
+            <h4 class="text-muted">Nenhum produto encontrado</h4>
+            <p class="text-muted">Tente ajustar os filtros ou 
+                <a href="{% url 'estoque:produto_create' %}">cadastre um novo produto</a>
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Paginação -->
+{% if page_obj.has_other_pages %}
+<nav aria-label="Navegação de páginas">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if categoria_id %}&categoria={{ categoria_id }}{% endif %}{% if fornecedor_id %}&fornecedor={{ fornecedor_id }}{% endif %}{% if estoque_baixo %}&estoque_baixo={{ estoque_baixo }}{% endif %}&ordem={{ ordem }}">
+                    Anterior
+                </a>
+            </li>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if categoria_id %}&categoria={{ categoria_id }}{% endif %}{% if fornecedor_id %}&fornecedor={{ fornecedor_id }}{% endif %}{% if estoque_baixo %}&estoque_baixo={{ estoque_baixo }}{% endif %}&ordem={{ ordem }}">
+                        {{ num }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if categoria_id %}&categoria={{ categoria_id }}{% endif %}{% if fornecedor_id %}&fornecedor={{ fornecedor_id }}{% endif %}{% if estoque_baixo %}&estoque_baixo={{ estoque_baixo }}{% endif %}&ordem={{ ordem }}">
+                    Próxima
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<!-- Resumo -->
+<div class="card mt-4">
+    <div class="card-body">
+        <div class="row text-center">
+            <div class="col-md-3">
+                <h5>{{ page_obj.paginator.count }}</h5>
+                <small class="text-muted">Total de Produtos</small>
+            </div>
+            <div class="col-md-3">
+                <h5>Página {{ page_obj.number }}</h5>
+                <small class="text-muted">de {{ page_obj.paginator.num_pages }}</small>
+            </div>
+            <div class="col-md-3">
+                <h5>{{ page_obj.object_list|length }}</h5>
+                <small class="text-muted">Nesta Página</small>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'estoque:produto_create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Novo Produto
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

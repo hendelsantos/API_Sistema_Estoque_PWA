@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}{{ titulo }} - Gestão de Estoque{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-{% if produto %}pencil{% else %}plus-circle{% endif %}"></i> 
+        {{ titulo }}
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'estoque:produto_list' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Informações Básicas -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary border-bottom pb-2">
+                                <i class="bi bi-info-circle"></i> Informações Básicas
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.codigo.label_tag }}
+                                {{ form.codigo|add_class:"form-control" }}
+                                {% if form.codigo.errors %}
+                                    <div class="text-danger small">{{ form.codigo.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.nome.label_tag }}
+                                {{ form.nome|add_class:"form-control" }}
+                                {% if form.nome.errors %}
+                                    <div class="text-danger small">{{ form.nome.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="mb-3">
+                                {{ form.descricao.label_tag }}
+                                {{ form.descricao|add_class:"form-control" }}
+                                {% if form.descricao.errors %}
+                                    <div class="text-danger small">{{ form.descricao.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.categoria.label_tag }}
+                                {{ form.categoria|add_class:"form-select" }}
+                                {% if form.categoria.errors %}
+                                    <div class="text-danger small">{{ form.categoria.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.fornecedor.label_tag }}
+                                {{ form.fornecedor|add_class:"form-select" }}
+                                {% if form.fornecedor.errors %}
+                                    <div class="text-danger small">{{ form.fornecedor.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controle de Estoque -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-success border-bottom pb-2">
+                                <i class="bi bi-boxes"></i> Controle de Estoque
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form.quantidade_atual.label_tag }}
+                                {{ form.quantidade_atual|add_class:"form-control" }}
+                                {% if form.quantidade_atual.errors %}
+                                    <div class="text-danger small">{{ form.quantidade_atual.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form.quantidade_minima.label_tag }}
+                                {{ form.quantidade_minima|add_class:"form-control" }}
+                                {% if form.quantidade_minima.errors %}
+                                    <div class="text-danger small">{{ form.quantidade_minima.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form.unidade_medida.label_tag }}
+                                {{ form.unidade_medida|add_class:"form-control" }}
+                                {% if form.unidade_medida.errors %}
+                                    <div class="text-danger small">{{ form.unidade_medida.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="mb-3">
+                                {{ form.localizacao.label_tag }}
+                                {{ form.localizacao|add_class:"form-control" }}
+                                {% if form.localizacao.errors %}
+                                    <div class="text-danger small">{{ form.localizacao.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preços -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-warning border-bottom pb-2">
+                                <i class="bi bi-currency-dollar"></i> Preços
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.preco_custo.label_tag }}
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    {{ form.preco_custo|add_class:"form-control" }}
+                                </div>
+                                {% if form.preco_custo.errors %}
+                                    <div class="text-danger small">{{ form.preco_custo.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.preco_venda.label_tag }}
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    {{ form.preco_venda|add_class:"form-control" }}
+                                </div>
+                                {% if form.preco_venda.errors %}
+                                    <div class="text-danger small">{{ form.preco_venda.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Imagem e Status -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-info border-bottom pb-2">
+                                <i class="bi bi-image"></i> Imagem e Status
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                {{ form.imagem.label_tag }}
+                                {{ form.imagem|add_class:"form-control" }}
+                                {% if form.imagem.errors %}
+                                    <div class="text-danger small">{{ form.imagem.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="form-check">
+                                    {{ form.ativo|add_class:"form-check-input" }}
+                                    {{ form.ativo.label_tag }}
+                                </div>
+                                {% if form.ativo.errors %}
+                                    <div class="text-danger small">{{ form.ativo.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'estoque:produto_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> 
+                                    {% if produto %}Atualizar{% else %}Criar{% endif %} Produto
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Painel Lateral -->
+    <div class="col-lg-4">
+        {% if produto %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Informações do Produto</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Código QR:</strong><br>
+                <code>{{ produto.qr_code|default:"Será gerado automaticamente" }}</code></p>
+                
+                <p><strong>Criado em:</strong><br>
+                {{ produto.criado_em|date:"d/m/Y H:i" }}</p>
+                
+                <p><strong>Última atualização:</strong><br>
+                {{ produto.atualizado_em|date:"d/m/Y H:i" }}</p>
+                
+                {% if produto.imagem %}
+                <p><strong>Imagem atual:</strong></p>
+                <img src="{{ produto.imagem.url }}" class="img-fluid rounded" alt="{{ produto.nome }}">
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Dicas</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        O código deve ser único para cada produto
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        A quantidade mínima define quando o produto aparecerá nos alertas
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        O código QR é gerado automaticamente para facilitar a busca
+                    </li>
+                    <li class="mb-0">
+                        <i class="bi bi-check-circle text-success"></i>
+                        Use a localização para encontrar o produto fisicamente
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

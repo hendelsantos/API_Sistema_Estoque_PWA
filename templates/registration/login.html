@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Gestão de Estoque{% endblock %}
+
+{% block login_content %}
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0"><i class="bi bi-box-arrow-in-right"></i> Login</h4>
+    </div>
+    <div class="card-body">
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Erro!</strong> Verifique os dados informados.
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="{{ form.username.id_for_label }}" class="form-label">Usuário</label>
+                <input type="text" name="{{ form.username.name }}" class="form-control" 
+                       id="{{ form.username.id_for_label }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="{{ form.password.id_for_label }}" class="form-label">Senha</label>
+                <input type="password" name="{{ form.password.name }}" class="form-control" 
+                       id="{{ form.password.id_for_label }}" required>
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-box-arrow-in-right"></i> Entrar
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer text-center text-muted">
+        <small>Sistema de Gestão de Estoque</small>
+    </div>
+</div>
+{% endblock %}

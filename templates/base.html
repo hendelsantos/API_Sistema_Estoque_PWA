@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{% block title %}Gestão de Estoque{% endblock %}</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Sistema completo de gestão de estoque com scanner QR para dispositivos móveis">
+    <meta name="theme-color" content="#0d6efd">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="EstoqueApp">
+    <meta name="msapplication-TileColor" content="#0d6efd">
+    <meta name="msapplication-config" content="/static/browserconfig.xml">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/static/manifest.json">
+    
+    <!-- Icons for PWA -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/icon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/icon-180x180.png">
+    <link rel="mask-icon" href="/static/icons/safari-pinned-tab.svg" color="#0d6efd">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    
+    <style>
+        /* PWA and Mobile-First Styles */
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            
+            /* Mobile-specific */
+            --mobile-padding: 1rem;
+            --mobile-header-height: 60px;
+            --mobile-bottom-nav-height: 70px;
+        }
+        
+        /* Remover scrollbar horizontal no mobile */
+        html, body {
+            overflow-x: hidden;
+            height: 100%;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #f8f9fa;
+        }
+        
+        /* Header mobile-friendly */
+        .navbar {
+            height: var(--mobile-header-height);
+            padding: 0.5rem var(--mobile-padding);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+        
+        .navbar-brand {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        /* Container mobile-first */
+        .main-container {
+            padding: 1rem;
+            min-height: calc(100vh - var(--mobile-header-height));
+            padding-bottom: calc(var(--mobile-bottom-nav-height) + 1rem);
+        }
+        
+        /* Cards otimizados para mobile */
+        .card {
+            border: none;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        
+        .card-header {
+            border-radius: 12px 12px 0 0 !important;
+            padding: 1rem;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        /* Botões mobile-friendly */
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            min-height: 44px; /* Touch target */
+        }
+        
+        .btn-lg {
+            padding: 1rem 2rem;
+            min-height: 52px;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            min-height: 36px;
+        }
+        
+        /* Formulários mobile-friendly */
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem;
+            min-height: 44px;
+            font-size: 16px; /* Evita zoom no iOS */
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        
+        /* Bottom Navigation para mobile */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            padding: 0.5rem 0;
+            z-index: 1020;
+            display: none;
+        }
+        
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+            text-decoration: none;
+            color: #6c757d;
+            font-size: 0.75rem;
+            transition: color 0.2s;
+        }
+        
+        .bottom-nav-item:hover,
+        .bottom-nav-item.active {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .bottom-nav-item i {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        /* QR Scanner mobile optimizations */
+        .qr-scanner {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        /* Lists mobile-friendly */
+        .list-group-item {
+            border: none;
+            border-radius: 8px !important;
+            margin-bottom: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+        }
+        
+        /* Tables responsive */
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        /* Loading spinner for HTMX */
+        .htmx-indicator {
+            display: none;
+        }
+        
+        .htmx-request .htmx-indicator {
+            display: inline;
+        }
+        
+        .htmx-request.htmx-indicator {
+            display: inline;
+        }
+        
+        /* Status badges */
+        .estoque-baixo {
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+        
+        .estoque-normal {
+            color: var(--success-color);
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .bottom-nav {
+                display: block;
+            }
+            
+            .main-container {
+                padding: 0.75rem;
+            }
+            
+            .sidebar {
+                display: none !important;
+            }
+            
+            .navbar-nav .nav-link {
+                padding: 0.75rem 1rem;
+            }
+            
+            .card {
+                margin-bottom: 0.75rem;
+            }
+            
+            .btn-group-vertical .btn {
+                margin-bottom: 0.5rem;
+            }
+            
+            /* Hide desktop elements */
+            .d-md-block {
+                display: none !important;
+            }
+            
+            /* Stack columns on mobile */
+            .row > [class*="col-"] {
+                margin-bottom: 1rem;
+            }
+        }
+        
+        /* Tablets */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .main-container {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* Touch improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .btn:hover {
+                transform: none;
+            }
+            
+            .card:hover {
+                transform: none;
+            }
+        }
+        
+        /* Dark mode support (future) */
+        @media (prefers-color-scheme: dark) {
+            /* Implementar dark mode futuramente */
+        }
+        
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .card {
+                border: 2px solid #000;
+            }
+            
+            .btn {
+                border-width: 2px;
+            }
+        }
+        
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            .navbar,
+            .bottom-nav,
+            .btn,
+            .sidebar {
+                display: none !important;
+            }
+            
+            .main-container {
+                padding: 0;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'estoque:dashboard' %}">
+                <i class="bi bi-boxes"></i> EstoqueApp
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav me-auto d-md-flex d-none">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'estoque:dashboard' %}">
+                            <i class="bi bi-house"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'estoque:produto_list' %}">
+                            <i class="bi bi-box"></i> Produtos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'estoque:buscar_qr' %}">
+                            <i class="bi bi-qr-code-scan"></i> Scanner
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ user.get_full_name|default:user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'admin:index' %}">
+                                <i class="bi bi-gear"></i> Admin
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">
+                                <i class="bi bi-box-arrow-right"></i> Sair
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        {% if user.is_authenticated %}
+        <!-- Sidebar for desktop -->
+        <div class="row d-none d-md-flex">
+            <nav class="col-md-3 col-lg-2 sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'estoque:dashboard' %}">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'estoque:produto_list' %}">
+                                <i class="bi bi-box"></i> Produtos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'estoque:categoria_list' %}">
+                                <i class="bi bi-tags"></i> Categorias
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'estoque:fornecedor_list' %}">
+                                <i class="bi bi-truck"></i> Fornecedores
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'estoque:movimentacao_list' %}">
+                                <i class="bi bi-arrow-left-right"></i> Movimentações
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'estoque:estoque_baixo' %}">
+                                <i class="bi bi-exclamation-triangle"></i> Estoque Baixo
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'estoque:buscar_qr' %}">
+                                <i class="bi bi-qr-code-scan"></i> Scanner QR
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <!-- Main content area -->
+            <main class="col-md-9 ms-sm-auto col-lg-10">
+        {% else %}
+            <main class="col-12">
+        {% endif %}
+                <!-- Messages -->
+                {% if messages %}
+                <div class="mb-3">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <!-- Page Header -->
+                {% block page_header %}{% endblock %}
+                
+                <!-- Page Content -->
+                {% block content %}
+                {% if not user.is_authenticated %}
+                <div class="container mt-5">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h4>Acesso Restrito</h4>
+                                    <p>Você precisa fazer login para acessar o sistema.</p>
+                                    <a href="{% url 'login' %}" class="btn btn-primary">
+                                        <i class="bi bi-box-arrow-in-right"></i> Fazer Login
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endblock %}
+            </main>
+        {% if user.is_authenticated %}
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Bottom Navigation for Mobile -->
+    {% if user.is_authenticated %}
+    <nav class="bottom-nav">
+        <div class="container-fluid">
+            <div class="row text-center">
+                <div class="col">
+                    <a href="{% url 'estoque:dashboard' %}" class="bottom-nav-item">
+                        <i class="bi bi-house-fill"></i>
+                        <span>Home</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'estoque:buscar_qr' %}" class="bottom-nav-item">
+                        <i class="bi bi-qr-code-scan"></i>
+                        <span>Scanner</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'estoque:produto_list' %}" class="bottom-nav-item">
+                        <i class="bi bi-box-seam"></i>
+                        <span>Produtos</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'estoque:movimentacao_list' %}" class="bottom-nav-item">
+                        <i class="bi bi-arrow-left-right"></i>
+                        <span>Movimentos</span>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="{% url 'estoque:estoque_baixo' %}" class="bottom-nav-item">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <span>Alertas</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful');
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // Show update available notification
+                                    if (confirm('Nova versão disponível! Deseja atualizar?')) {
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch(function(error) {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+        
+        // PWA Install Prompt
+        let deferredPrompt;
+        let installButton = null;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button
+            showInstallButton();
+        });
+        
+        function showInstallButton() {
+            // Create install button if it doesn't exist
+            if (!installButton) {
+                installButton = document.createElement('button');
+                installButton.className = 'btn btn-success btn-sm position-fixed';
+                installButton.style.cssText = 'bottom: 80px; right: 20px; z-index: 1050; border-radius: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+                installButton.innerHTML = '<i class="bi bi-download"></i> Instalar App';
+                installButton.onclick = installPWA;
+                document.body.appendChild(installButton);
+            }
+            installButton.style.display = 'block';
+        }
+        
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((result) => {
+                    if (result.outcome === 'accepted') {
+                        console.log('PWA instalado');
+                    }
+                    deferredPrompt = null;
+                    if (installButton) {
+                        installButton.style.display = 'none';
+                    }
+                });
+            }
+        }
+        
+        // Hide install button if already installed
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('PWA foi instalado');
+            if (installButton) {
+                installButton.style.display = 'none';
+            }
+        });
+        
+        // Add active class to current nav items
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.bottom-nav-item');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+        
+        // Touch gestures for mobile
+        let startY = 0;
+        let endY = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY;
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            endY = e.changedTouches[0].clientY;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = startY - endY;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe up - hide address bar on mobile
+                    window.scrollTo(0, 1);
+                }
+            }
+        }
+    </script>
+    
+    <!-- HTMX Configuration -->
+    <script>
+        document.body.addEventListener('htmx:configRequest', function(evt) {
+            evt.detail.headers['X-CSRFToken'] = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Relatórios - Gestão de Estoque{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="bi bi-graph-up"></i> Relatórios</h1>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-exclamation-triangle fs-1 text-warning"></i>
+                <h5 class="card-title">Estoque Baixo</h5>
+                <p class="card-text">Produtos que precisam de reposição</p>
+                <a href="{% url 'estoque:estoque_baixo' %}" class="btn btn-warning">
+                    <i class="bi bi-eye"></i> Ver Relatório
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-arrow-left-right fs-1 text-primary"></i>
+                <h5 class="card-title">Movimentações</h5>
+                <p class="card-text">Histórico completo de entradas e saídas</p>
+                <a href="{% url 'estoque:movimentacao_list' %}" class="btn btn-primary">
+                    <i class="bi bi-eye"></i> Ver Relatório
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-currency-dollar fs-1 text-success"></i>
+                <h5 class="card-title">Valor do Estoque</h5>
+                <p class="card-text">Relatório financeiro do inventário</p>
+                <button class="btn btn-success" disabled>
+                    <i class="bi bi-clock"></i> Em breve
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-graph-up fs-1 text-info"></i>
+                <h5 class="card-title">Produtos Mais Movimentados</h5>
+                <p class="card-text">Análise de giro de estoque</p>
+                <button class="btn btn-info" disabled>
+                    <i class="bi bi-clock"></i> Em breve
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-download"></i> Exportar Dados</h5>
+            </div>
+            <div class="card-body">
+                <p>Funcionalidades de exportação em desenvolvimento:</p>
+                <div class="d-grid gap-2 d-md-flex">
+                    <button class="btn btn-outline-primary" disabled>
+                        <i class="bi bi-file-excel"></i> Exportar para Excel
+                    </button>
+                    <button class="btn btn-outline-danger" disabled>
+                        <i class="bi bi-file-pdf"></i> Exportar para PDF
+                    </button>
+                    <button class="btn btn-outline-secondary" disabled>
+                        <i class="bi bi-file-text"></i> Exportar CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
