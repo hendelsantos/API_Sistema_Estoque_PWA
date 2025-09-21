@@ -30,33 +30,51 @@ class Command(BaseCommand):
 
     def create_admin_user(self):
         """Cria usuário admin"""
-        if User.objects.filter(username='admin').exists():
-            self.stdout.write('✅ Superusuário admin já existe')
-            return
-
-        User.objects.create_superuser(
+        admin_user, created = User.objects.get_or_create(
             username='admin',
-            email='admin@gestaoestoque.com',
-            password='admin123',
-            first_name='Administrador',
-            last_name='Sistema'
+            defaults={
+                'email': 'admin@gestaoestoque.com',
+                'first_name': 'Administrador',
+                'last_name': 'Sistema',
+                'is_superuser': True,
+                'is_staff': True,
+                'is_active': True
+            }
         )
-        self.stdout.write('✅ Superusuário admin criado')
+        
+        # Sempre garantir que a senha está correta
+        admin_user.set_password('admin123')
+        admin_user.is_superuser = True
+        admin_user.is_staff = True
+        admin_user.is_active = True
+        admin_user.save()
+        
+        if created:
+            self.stdout.write('✅ Superusuário admin criado')
+        else:
+            self.stdout.write('✅ Superusuário admin atualizado')
 
     def create_test_user(self):
         """Cria usuário de teste"""
-        if User.objects.filter(username='user').exists():
-            self.stdout.write('✅ Usuário de teste já existe')
-            return
-
-        User.objects.create_user(
+        test_user, created = User.objects.get_or_create(
             username='user',
-            email='user@gestaoestoque.com',
-            password='user123',
-            first_name='Usuário',
-            last_name='Teste'
+            defaults={
+                'email': 'user@gestaoestoque.com',
+                'first_name': 'Usuário',
+                'last_name': 'Teste',
+                'is_active': True
+            }
         )
-        self.stdout.write('✅ Usuário de teste criado')
+        
+        # Sempre garantir que a senha está correta
+        test_user.set_password('user123')
+        test_user.is_active = True
+        test_user.save()
+        
+        if created:
+            self.stdout.write('✅ Usuário de teste criado')
+        else:
+            self.stdout.write('✅ Usuário de teste atualizado')
 
     def create_sample_data(self):
         """Cria dados de exemplo"""
