@@ -4,7 +4,6 @@
 {% block title %}{{ titulo }} - Gestão de Estoque{% endblock %}
 
 {% block page_header %}
-{% block page_header %}
 <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h3"><i class="bi bi-box"></i> 
         {% if form.instance.pk %}Editar{% else %}Novo{% endif %} Produto
@@ -16,9 +15,7 @@
     </div>
 </div>
 {% endblock %}
-{% endblock %}
 
-{% block content %}
 {% block content %}
 <div class="row">
     <div class="col-12">
@@ -32,237 +29,274 @@
                         <h5 class="text-primary border-bottom pb-2 mb-3">
                             <i class="bi bi-info-circle"></i> Informações Básicas
                         </h5>
-                        
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                {{ form.codigo.label_tag }}
+                                <label for="{{ form.codigo.id_for_label }}" class="form-label">
+                                    <i class="bi bi-upc-scan"></i> {{ form.codigo.label }}
+                                    <span class="text-danger">*</span>
+                                </label>
                                 {{ form.codigo|add_class:"form-control" }}
                                 {% if form.codigo.errors %}
-                                    <div class="text-danger">{{ form.codigo.errors }}</div>
+                                    <div class="text-danger small mt-1">
+                                        {{ form.codigo.errors.0 }}
+                                    </div>
                                 {% endif %}
+                                <div class="form-text">Código único do produto (SKU)</div>
                             </div>
                             
                             <div class="col-md-6 mb-3">
-                                {{ form.nome.label_tag }}
+                                <label for="{{ form.nome.id_for_label }}" class="form-label">
+                                    <i class="bi bi-tag"></i> {{ form.nome.label }}
+                                    <span class="text-danger">*</span>
+                                </label>
                                 {{ form.nome|add_class:"form-control" }}
                                 {% if form.nome.errors %}
-                                    <div class="text-danger">{{ form.nome.errors }}</div>
+                                    <div class="text-danger small mt-1">
+                                        {{ form.nome.errors.0 }}
+                                    </div>
                                 {% endif %}
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            {{ form.descricao.label_tag }}
-                            {{ form.descricao|add_class:"form-control" }}
-                            {% if form.descricao.errors %}
-                                <div class="text-danger">{{ form.descricao.errors }}</div>
-                            {% endif %}
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="{{ form.descricao.id_for_label }}" class="form-label">
+                                    <i class="bi bi-file-text"></i> {{ form.descricao.label }}
+                                </label>
+                                {{ form.descricao|add_class:"form-control" }}
+                                {% if form.descricao.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.descricao.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                {{ form.categoria.label_tag }}
+                                <label for="{{ form.categoria.id_for_label }}" class="form-label">
+                                    <i class="bi bi-bookmark"></i> {{ form.categoria.label }}
+                                    <span class="text-danger">*</span>
+                                </label>
                                 {{ form.categoria|add_class:"form-select" }}
                                 {% if form.categoria.errors %}
-                                    <div class="text-danger">{{ form.categoria.errors }}</div>
+                                    <div class="text-danger small mt-1">
+                                        {{ form.categoria.errors.0 }}
+                                    </div>
                                 {% endif %}
                             </div>
                             
                             <div class="col-md-6 mb-3">
-                                {{ form.fornecedor.label_tag }}
+                                <label for="{{ form.fornecedor.id_for_label }}" class="form-label">
+                                    <i class="bi bi-truck"></i> {{ form.fornecedor.label }}
+                                </label>
                                 {{ form.fornecedor|add_class:"form-select" }}
                                 {% if form.fornecedor.errors %}
-                                    <div class="text-danger">{{ form.fornecedor.errors }}</div>
+                                    <div class="text-danger small mt-1">
+                                        {{ form.fornecedor.errors.0 }}
+                                    </div>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
 
                     <!-- Controle de Estoque -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h5 class="text-success border-bottom pb-2">
-                                <i class="bi bi-boxes"></i> Controle de Estoque
-                            </h5>
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                {{ form.quantidade_atual.label_tag }}
+                    <div class="mb-4">
+                        <h5 class="text-primary border-bottom pb-2 mb-3">
+                            <i class="bi bi-box-seam"></i> Controle de Estoque
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.quantidade_atual.id_for_label }}" class="form-label">
+                                    <i class="bi bi-123"></i> {{ form.quantidade_atual.label }}
+                                    <span class="text-danger">*</span>
+                                </label>
                                 {{ form.quantidade_atual|add_class:"form-control" }}
                                 {% if form.quantidade_atual.errors %}
-                                    <div class="text-danger small">{{ form.quantidade_atual.errors.0 }}</div>
+                                    <div class="text-danger small mt-1">
+                                        {{ form.quantidade_atual.errors.0 }}
+                                    </div>
                                 {% endif %}
                             </div>
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                {{ form.quantidade_minima.label_tag }}
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.quantidade_minima.id_for_label }}" class="form-label">
+                                    <i class="bi bi-exclamation-triangle"></i> {{ form.quantidade_minima.label }}
+                                    <span class="text-danger">*</span>
+                                </label>
                                 {{ form.quantidade_minima|add_class:"form-control" }}
                                 {% if form.quantidade_minima.errors %}
-                                    <div class="text-danger small">{{ form.quantidade_minima.errors.0 }}</div>
+                                    <div class="text-danger small mt-1">
+                                        {{ form.quantidade_minima.errors.0 }}
+                                    </div>
                                 {% endif %}
+                                <div class="form-text">Alerta quando atingir este valor</div>
                             </div>
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                {{ form.unidade_medida.label_tag }}
-                                {{ form.unidade_medida|add_class:"form-control" }}
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.unidade_medida.id_for_label }}" class="form-label">
+                                    <i class="bi bi-rulers"></i> {{ form.unidade_medida.label }}
+                                    <span class="text-danger">*</span>
+                                </label>
+                                {{ form.unidade_medida|add_class:"form-select" }}
                                 {% if form.unidade_medida.errors %}
-                                    <div class="text-danger small">{{ form.unidade_medida.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-12">
-                            <div class="mb-3">
-                                {{ form.localizacao.label_tag }}
-                                {{ form.localizacao|add_class:"form-control" }}
-                                {% if form.localizacao.errors %}
-                                    <div class="text-danger small">{{ form.localizacao.errors.0 }}</div>
+                                    <div class="text-danger small mt-1">
+                                        {{ form.unidade_medida.errors.0 }}
+                                    </div>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
 
-                    <!-- Preços -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h5 class="text-warning border-bottom pb-2">
-                                <i class="bi bi-currency-dollar"></i> Preços
-                            </h5>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                {{ form.preco_custo.label_tag }}
+                    <!-- Informações Financeiras -->
+                    <div class="mb-4">
+                        <h5 class="text-primary border-bottom pb-2 mb-3">
+                            <i class="bi bi-currency-dollar"></i> Informações Financeiras
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.preco_custo.id_for_label }}" class="form-label">
+                                    <i class="bi bi-tag"></i> {{ form.preco_custo.label }}
+                                </label>
                                 <div class="input-group">
                                     <span class="input-group-text">R$</span>
                                     {{ form.preco_custo|add_class:"form-control" }}
                                 </div>
                                 {% if form.preco_custo.errors %}
-                                    <div class="text-danger small">{{ form.preco_custo.errors.0 }}</div>
+                                    <div class="text-danger small mt-1">
+                                        {{ form.preco_custo.errors.0 }}
+                                    </div>
                                 {% endif %}
                             </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                {{ form.preco_venda.label_tag }}
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.preco_venda.id_for_label }}" class="form-label">
+                                    <i class="bi bi-tag-fill"></i> {{ form.preco_venda.label }}
+                                </label>
                                 <div class="input-group">
                                     <span class="input-group-text">R$</span>
                                     {{ form.preco_venda|add_class:"form-control" }}
                                 </div>
                                 {% if form.preco_venda.errors %}
-                                    <div class="text-danger small">{{ form.preco_venda.errors.0 }}</div>
+                                    <div class="text-danger small mt-1">
+                                        {{ form.preco_venda.errors.0 }}
+                                    </div>
                                 {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-percent"></i> Margem de Lucro
+                                </label>
+                                <div class="form-control-plaintext" id="margem-lucro">
+                                    Calculando...
+                                </div>
+                                <div class="form-text">Calculado automaticamente</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Imagem e Status -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h5 class="text-info border-bottom pb-2">
-                                <i class="bi bi-image"></i> Imagem e Status
-                            </h5>
-                        </div>
-                        
-                        <div class="col-md-8">
-                            <div class="mb-3">
-                                {{ form.imagem.label_tag }}
-                                {{ form.imagem|add_class:"form-control" }}
-                                {% if form.imagem.errors %}
-                                    <div class="text-danger small">{{ form.imagem.errors.0 }}</div>
+                    <!-- Informações Adicionais -->
+                    <div class="mb-4">
+                        <h5 class="text-primary border-bottom pb-2 mb-3">
+                            <i class="bi bi-gear"></i> Configurações
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.codigo_barras.id_for_label }}" class="form-label">
+                                    <i class="bi bi-upc"></i> {{ form.codigo_barras.label }}
+                                </label>
+                                {{ form.codigo_barras|add_class:"form-control" }}
+                                {% if form.codigo_barras.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.codigo_barras.errors.0 }}
+                                    </div>
                                 {% endif %}
+                                <div class="form-text">Para scanner de código de barras</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.localizacao.id_for_label }}" class="form-label">
+                                    <i class="bi bi-geo-alt"></i> {{ form.localizacao.label }}
+                                </label>
+                                {{ form.localizacao|add_class:"form-control" }}
+                                {% if form.localizacao.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.localizacao.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Ex: Prateleira A1, Setor B</div>
                             </div>
                         </div>
                         
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label class="form-label">&nbsp;</label>
-                                <div class="form-check">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <div class="form-check form-switch">
                                     {{ form.ativo|add_class:"form-check-input" }}
-                                    {{ form.ativo.label_tag }}
+                                    <label class="form-check-label" for="{{ form.ativo.id_for_label }}">
+                                        <i class="bi bi-power"></i> {{ form.ativo.label }}
+                                    </label>
                                 </div>
                                 {% if form.ativo.errors %}
-                                    <div class="text-danger small">{{ form.ativo.errors.0 }}</div>
+                                    <div class="text-danger small mt-1">
+                                        {{ form.ativo.errors.0 }}
+                                    </div>
                                 {% endif %}
+                                <div class="form-text">Produtos inativos não aparecem nas listagens</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Botões -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-                                <a href="{% url 'estoque:produto_list' %}" class="btn btn-secondary">
-                                    <i class="bi bi-arrow-left"></i> Cancelar
-                                </a>
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="bi bi-check-circle"></i> 
-                                    {% if produto %}Atualizar{% else %}Criar{% endif %} Produto
-                                </button>
-                            </div>
-                        </div>
+                    <!-- Botões de Ação -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'estoque:produto_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> 
+                            {% if form.instance.pk %}Atualizar{% else %}Salvar{% endif %} Produto
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    
-    <!-- Painel Lateral -->
-    <div class="col-lg-4">
-        {% if produto %}
-        <div class="card mb-3">
-            <div class="card-header">
-                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Informações do Produto</h6>
-            </div>
-            <div class="card-body">
-                <p><strong>Código QR:</strong><br>
-                <code>{{ produto.qr_code|default:"Será gerado automaticamente" }}</code></p>
-                
-                <p><strong>Criado em:</strong><br>
-                {{ produto.criado_em|date:"d/m/Y H:i" }}</p>
-                
-                <p><strong>Última atualização:</strong><br>
-                {{ produto.atualizado_em|date:"d/m/Y H:i" }}</p>
-                
-                {% if produto.imagem %}
-                <p><strong>Imagem atual:</strong></p>
-                <img src="{{ produto.imagem.url }}" class="img-fluid rounded" alt="{{ produto.nome }}">
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
-        
-        <div class="card">
-            <div class="card-header">
-                <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Dicas</h6>
-            </div>
-            <div class="card-body">
-                <ul class="list-unstyled mb-0">
-                    <li class="mb-2">
-                        <i class="bi bi-check-circle text-success"></i>
-                        O código deve ser único para cada produto
-                    </li>
-                    <li class="mb-2">
-                        <i class="bi bi-check-circle text-success"></i>
-                        A quantidade mínima define quando o produto aparecerá nos alertas
-                    </li>
-                    <li class="mb-2">
-                        <i class="bi bi-check-circle text-success"></i>
-                        O código QR é gerado automaticamente para facilitar a busca
-                    </li>
-                    <li class="mb-0">
-                        <i class="bi bi-check-circle text-success"></i>
-                        Use a localização para encontrar o produto fisicamente
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
 </div>
+
+<!-- JavaScript para cálculos automáticos -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const precoCusto = document.getElementById('{{ form.preco_custo.id_for_label }}');
+    const precoVenda = document.getElementById('{{ form.preco_venda.id_for_label }}');
+    const margemLucro = document.getElementById('margem-lucro');
+    
+    function calcularMargem() {
+        const custo = parseFloat(precoCusto.value) || 0;
+        const venda = parseFloat(precoVenda.value) || 0;
+        
+        if (custo > 0 && venda > 0) {
+            const margem = ((venda - custo) / custo) * 100;
+            margemLucro.textContent = margem.toFixed(2) + '%';
+            
+            if (margem < 0) {
+                margemLucro.className = 'form-control-plaintext text-danger fw-bold';
+            } else if (margem < 20) {
+                margemLucro.className = 'form-control-plaintext text-warning fw-bold';
+            } else {
+                margemLucro.className = 'form-control-plaintext text-success fw-bold';
+            }
+        } else {
+            margemLucro.textContent = 'Insira os preços';
+            margemLucro.className = 'form-control-plaintext text-muted';
+        }
+    }
+    
+    // Calcular margem inicial
+    calcularMargem();
+    
+    // Recalcular quando os preços mudarem
+    precoCusto.addEventListener('input', calcularMargem);
+    precoVenda.addEventListener('input', calcularMargem);
+});
+</script>
 {% endblock %}
