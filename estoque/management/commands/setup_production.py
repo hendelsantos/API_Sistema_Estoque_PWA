@@ -104,34 +104,34 @@ class Command(BaseCommand):
             
             produtos_data = [
                 {
+                    'codigo': 'SM001',
                     'nome': 'Smartphone Samsung Galaxy',
                     'categoria': categoria_eletronicos,
                     'fornecedor': fornecedor,
                     'preco_custo': 800.00,
                     'preco_venda': 1200.00,
                     'quantidade_atual': 15,
-                    'quantidade_minima': 5,
-                    'codigo_barras': '7891234567890'
+                    'quantidade_minima': 5
                 },
                 {
+                    'codigo': 'NB001',
                     'nome': 'Notebook Dell Inspiron',
                     'categoria': categoria_informatica,
                     'fornecedor': fornecedor,
                     'preco_custo': 2500.00,
                     'preco_venda': 3500.00,
                     'quantidade_atual': 8,
-                    'quantidade_minima': 3,
-                    'codigo_barras': '7891234567891'
+                    'quantidade_minima': 3
                 },
                 {
+                    'codigo': 'MS001',
                     'nome': 'Mouse Wireless Logitech',
                     'categoria': categoria_informatica,
                     'fornecedor': fornecedor,
                     'preco_custo': 45.00,
                     'preco_venda': 89.90,
                     'quantidade_atual': 2,  # Estoque baixo
-                    'quantidade_minima': 10,
-                    'codigo_barras': '7891234567892'
+                    'quantidade_minima': 10
                 }
             ]
             
